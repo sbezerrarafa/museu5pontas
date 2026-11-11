@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Museu da Cidade do Recife · Forte das Cinco Pontas</title>
+<meta name="description" content="Museu da Cidade do Recife, instalado no Forte das Cinco Pontas desde 1982. Exposições, acervo de 250 mil imagens e visita virtual 360°.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a href="#topo" class="brand"><img src="img/logo.png" alt="Museu da Cidade do Recife"></a>
+  <nav>
+    <a href="#museu">Museu</a>
+    <a href="#planta">Planta 3D</a>
+    <a href="#exposicoes">Exposições</a>
+    <a href="#acervo">Acervo</a>
+    <a href="#tour" class="pill">Visita 360°</a>
+    <a href="#visite">Visite</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="topo">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-text">
+    <p class="eyebrow">Forte das Cinco Pontas · Recife</p>
+    <h1>A história do Recife<br>em <em>cinco pontas</em></h1>
+    <p class="lead">Um museu dentro de uma fortaleza erguida pelos holandeses em 1630, com 250 mil imagens que contam a vida urbana, cultural e social da cidade.</p>
+    <div class="cta">
+      <a href="#tour" class="btn primary">Fazer visita virtual 360°</a>
+      <a href="#exposicoes" class="btn">Ver exposições</a>
+    </div>
+  </div>
+  <div class="hero-hint" id="hero-hint">↻ arraste ou clique no forte para girar</div>
+  <div class="scroll-hint">role <span></span></div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Museu da Cidade do Recife</span><span>★</span><span>Forte das Cinco Pontas</span><span>★</span><span>Entrada gratuita</span><span>★</span>
+    <span>Museu da Cidade do Recife</span><span>★</span><span>Forte das Cinco Pontas</span><span>★</span><span>Entrada gratuita</span><span>★</span>
+  </div>
+</div>
+
+<!-- MUSEU -->
+<section class="section" id="museu">
+  <div class="wrap grid2">
+    <div class="reveal">
+      <p class="eyebrow">O Museu</p>
+      <h2>Preservando a história urbana, cultural e social</h2>
+      <p>O forte nasceu pentagonal, com cinco pontas, em 1630; reconstruído em pedra e cal pelos portugueses, ganhou quatro baluartes. Instalado ali em 1982, o Museu da Cidade do Recife guarda cartografia, fotografia, arqueologia e objetos que revelam como a cidade cresceu, entre rios, pontes e revoluções.</p>
+      <ul class="stats">
+        <li><b data-count="250000">0</b><span>imagens no acervo</span></li>
+        <li><b data-count="1982">0</b><span>instalado no forte</span></li>
+        <li><b data-count="1630">0</b><span>forte construído</span></li>
+      </ul>
+    </div>
+    <figure class="reveal tilt photo">
+      <img src="img/acervo.jpg" alt="Fotografia do acervo do Museu da Cidade do Recife">
+      <figcaption>Acervo fotográfico do MCR</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- MAQUETE 3D -->
+<section class="section sand" id="planta">
+  <div class="wrap">
+    <p class="eyebrow reveal">Planta interativa</p>
+    <h2 class="reveal">Explore o forte em 3D</h2>
+    <p class="reveal sub">Uma maquete esquemática da fortaleza: planta quadrada com quatro baluartes, fosso, portão e pátio interno. Clique nos pontos numerados e salte para a visita 360° daquela área.</p>
+    <div class="explorer reveal">
+      <div class="fort-view" id="fort-view">
+        <canvas id="fort-canvas"></canvas>
+        <div id="fort-labels"></div>
+        <button id="fort-reset" class="reset">↺ visão geral</button>
+      </div>
+      <aside class="spot-panel">
+        <h3 id="spot-name">Explore o forte</h3>
+        <p id="spot-text">Arraste para girar, use a roda para aproximar e clique nos pontos numerados.</p>
+        <button class="btn primary" id="spot-tour" hidden>Ver no tour 360° →</button>
+        <div class="spot-list" id="spot-list"></div>
+      </aside>
+    </div>
+    <p class="note">Modelo esquemático, não é um levantamento arquitetônico. Dá para refinar com a planta oficial do museu.</p>
+  </div>
+</section>
+
+<!-- EXPOSIÇÕES -->
+<section class="section" id="exposicoes">
+  <div class="wrap">
+    <p class="eyebrow reveal">Em cartaz e em destaque</p>
+    <h2 class="reveal">Exposições e programação</h2>
+    <div class="cards">
+      <article class="card tilt reveal">
+        <img src="img/chico.jpeg" alt="Exposição Chico da Silva">
+        <div><span class="tag">Exposição</span><h3>Chico da Silva</h3><p>Últimos dias para ver a mostra no Museu da Cidade do Recife.</p></div>
+      </article>
+      <article class="card tilt reveal">
+        <img src="img/prefeitos.jpeg" alt="Exposição sobre prefeitos do Recife">
+        <div><span class="tag">Exposição</span><h3>Memória e gestão dos prefeitos</h3><p>Uma nova mostra sobre a trajetória administrativa da capital.</p></div>
+      </article>
+      <article class="card tilt reveal">
+        <img src="img/festival.webp" alt="Festival Meu Forte é Cultura">
+        <div><span class="tag">Evento</span><h3>Meu Forte é Cultura</h3><p>Dois dias de programação gratuita ocupando o Forte das Cinco Pontas.</p></div>
+      </article>
+      <article class="card tilt reveal">
+        <img src="img/aniversario.jpeg" alt="Aniversário do Recife">
+        <div><span class="tag">Programação</span><h3>489 anos do Recife</h3><p>Celebração especial do aniversário da cidade no museu.</p></div>
+      </article>
+      <article class="card tilt reveal">
+        <img src="img/feira.jpeg" alt="Feira na Foz">
+        <div><span class="tag">Evento</span><h3>Feira na Foz</h3><p>Edição especial dedicada a Chico da Silva.</p></div>
+      </article>
+      <article class="card tilt reveal">
+        <img src="img/paco.jpeg" alt="Formação no Paço do Frevo">
+        <div><span class="tag">Formação</span><h3>Recife, memória e reflexão urbana</h3><p>Formação sobre a cidade como espaço de cultura e memória.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- TOUR 360 -->
+<section class="section sand" id="tour">
+  <div class="wrap">
+    <p class="eyebrow reveal">Visita virtual</p>
+    <h2 class="reveal">Passeie pelo museu em 360°</h2>
+    <p class="reveal sub">Caminhe pelo forte: segure o botão Andar (ou a tecla W), volte com S, arraste para olhar ao redor e use o minimapa para pular de lugar.</p>
+
+    <div class="tour reveal" id="tour-box">
+      <canvas id="tour-canvas"></canvas>
+      <div class="tour-ui">
+        <div class="tour-top">
+          <span class="live" id="tour-source">Carregando…</span>
+          <button id="btn-full" title="Tela cheia">⛶</button>
+        </div>
+        <div class="tour-bottom">
+          <button id="btn-back" title="Voltar (S / ↓)">▼</button>
+          <button id="btn-walk" class="walk" title="Segure para andar (W / ↑)">▲ Andar</button>
+          <button id="btn-play" title="Passeio automático">▶</button>
+          <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Posição no percurso">
+          <button id="btn-gyro" title="Usar giroscópio (celular)">⌖</button>
+        </div>
+      </div>
+      <canvas id="minimap" title="Minimapa · clique para ir até o ponto"></canvas>
+      <div class="tour-caption" id="tour-caption"></div>
+      <div class="drag-hint" id="drag-hint">Segure ▲ Andar (ou W) para caminhar · arraste para olhar ao redor</div>
+    </div>
+
+    <div class="rooms" id="rooms"></div>
+    <p class="note">Por enquanto é uma simulação dentro da maquete 3D. Com o vídeo real (360° equirretangular, gravado caminhando pelo percurso) em <code>video/tour360.mp4</code>, o mesmo controle passa a andar o vídeo. Para vídeo local é preciso abrir o site por um servidor (por exemplo <code>python -m http.server</code>).</p>
+  </div>
+</section>
+
+<!-- ACERVO -->
+<section class="section" id="acervo">
+  <div class="wrap grid2 rev">
+    <figure class="reveal tilt photo">
+      <img src="img/leonardo.png" alt="Coleção Leonardo Dantas">
+      <figcaption>Coleção Leonardo Dantas · 1.361 itens</figcaption>
+    </figure>
+    <div class="reveal">
+      <p class="eyebrow">Acervo</p>
+      <h2>Cartografia, fotografia e arqueologia</h2>
+      <p>Consulte a Coleção Leonardo Dantas, os livros de tombo fotográficos e o catálogo do acervo cartográfico, disponível para download gratuito.</p>
+      <div class="chips"><span>Cartografia</span><span>Fotografia</span><span>Arqueologia</span><span>Livros e periódicos</span></div>
+      <a class="btn primary" href="https://museudacidadedorecife.org/" target="_blank" rel="noopener">Explorar o acervo</a>
+    </div>
+  </div>
+</section>
+
+<!-- VISITE -->
+<section class="section dark" id="visite">
+  <div class="wrap grid2">
+    <div class="reveal">
+      <p class="eyebrow">Visite</p>
+      <h2>Venha conhecer o forte</h2>
+      <p>Praça das Cinco Pontas, s/n · São José · Recife-PE · CEP 50020-500</p>
+      <dl class="info">
+        <dt>Quarta a sexta</dt><dd>10h às 17h</dd>
+        <dt>Sábados e domingos</dt><dd>10h às 16h</dd>
+        <dt>Entrada</dt><dd>Gratuita</dd>
+        <dt>Telefone</dt><dd>(81) 3355-9830</dd>
+      </dl>
+      <p class="small">Confirme horários no site oficial antes da visita.</p>
+    </div>
+    <div class="reveal map">
+      <iframe title="Mapa" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=-34.8885%2C-8.0680%2C-34.8760%2C-8.0600&layer=mapnik"></iframe>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© Museu da Cidade do Recife · Forte das Cinco Pontas · Protótipo de redesenho</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/fort.js"></script>
+<script src="js/hero.js"></script>
+<script src="js/explorer.js"></script>
+<script src="js/tour.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
