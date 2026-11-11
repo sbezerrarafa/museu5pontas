@@ -3,6 +3,7 @@
    com parapeito de ameias, pátio de pedra escura, duas alas com telhado de barro
    (portas e janelas marrons), mastro com bandeira, gramado e palmeiras.
    Unidades: ~1 unidade = 5 m (esquemático, não é levantamento topográfico). */
+window.LOWPOWER = matchMedia('(pointer:coarse)').matches || innerWidth < 860;   // celular/tablet: menos pixels e sombras
 window.buildFort = function () {
   const T = THREE;
   const root = new T.Group();

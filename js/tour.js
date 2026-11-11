@@ -27,7 +27,7 @@
 
   // ---- renderer / cenas ----
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, LOWPOWER ? 1.5 : 2));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const camera = new THREE.PerspectiveCamera(75, 16 / 9, 0.05, 400);
 
@@ -43,7 +43,7 @@
   sScene.fog = new THREE.Fog(0xcfe2ee, 22, 70);
   sScene.add(new THREE.HemisphereLight(0xdcecff, 0xb7a98a, 0.55));
   const sun = new THREE.DirectionalLight(0xfff0d8, 0.8);
-  sun.position.set(8, 14, 6); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  sun.position.set(8, 14, 6); sun.castShadow = true; sun.shadow.mapSize.set(LOWPOWER ? 1024 : 2048, LOWPOWER ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 45 });
   sScene.add(sun);
   const far = new THREE.Mesh(new THREE.CircleGeometry(200, 48), new THREE.MeshStandardMaterial({ color: 0x6b9a3a, roughness: 1 }));
@@ -55,6 +55,10 @@
   let p = 0, lon = 0, lat = 0, head = -90, walk = 0, auto = false, drag = false, idleLook = 0, phase = 0;
   const label = $('tour-source'), seek = $('seek'), playBtn = $('btn-play'), caption = $('tour-caption'), hint = $('drag-hint');
   const hideHint = () => hint.classList.add('hide');
+  const touch = matchMedia('(pointer:coarse)').matches;
+  if (touch) hint.textContent = 'Segure ▲ Andar para caminhar · deslize para olhar ao redor';
+  canvas.style.touchAction = touch ? 'pan-y' : 'none';   // no celular a página ainda rola na vertical sobre o tour
+  box.querySelectorAll('button').forEach(b => b.addEventListener('contextmenu', e => e.preventDefault()));
   const deg = r => r * 180 / Math.PI;
   const norm = a => ((a + 540) % 360) - 180;
   const tangentLon = pp => { const t = curve.getTangentAt(Math.min(Math.max(pp, 0), 1)); return deg(Math.atan2(t.z, t.x)); };
@@ -82,7 +86,7 @@
   // ---- salas ----
   const roomsEl = $('rooms');
   ROOMS.forEach((r, i) => {
-    const b = document.createElement('button'); b.textContent = `${i + 1}. ${r.name}`;
+    const b = document.createElement('button'); b.innerHTML = `<i>${i + 1}</i><span>${r.name}</span>`;
     b.onclick = () => goRoom(i); roomsEl.appendChild(b);
   });
   function setP(np) {
@@ -107,13 +111,17 @@
   hold($('btn-walk'), 1); hold($('btn-back'), -1);
   playBtn.onclick = () => { auto = !auto; walk = 0; if (auto && p >= 1) setP(0); hideHint(); };
   seek.oninput = () => { setP(seek.value / 1000); walk = 0; auto = false; };
-  $('btn-full').onclick = () => { document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen && box.requestFullscreen(); };
+  // tela cheia: API nativa quando existe; no iPhone usa uma "tela cheia" por CSS
+  $('btn-full').onclick = () => {
+    if (box.requestFullscreen) { document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen(); return; }
+    const on = box.classList.toggle('fs'); document.body.style.overflow = on ? 'hidden' : ''; setTimeout(resize, 50);
+  };
 
   let hover = false;
   box.addEventListener('pointerenter', () => hover = true); box.addEventListener('pointerleave', () => hover = false);
   const keyDir = k => (k === 'w' || k === 'W' || k === 'ArrowUp') ? 1 : (k === 's' || k === 'S' || k === 'ArrowDown') ? -1 : 0;
   addEventListener('keydown', e => {
-    const d = keyDir(e.key); if (!d || !(hover || document.fullscreenElement)) return;
+    const d = keyDir(e.key); if (!d || !(hover || document.fullscreenElement || box.classList.contains('fs'))) return;
     e.preventDefault(); walk = d; auto = false; hideHint();
   });
   addEventListener('keyup', e => { if (keyDir(e.key) === walk) walk = 0; });
@@ -121,7 +129,7 @@
   // ---- olhar (arrastar) ----
   let px = 0, py = 0;
   canvas.addEventListener('pointerdown', e => { drag = true; px = e.clientX; py = e.clientY; idleLook = 0; hideHint(); canvas.setPointerCapture(e.pointerId); });
-  canvas.addEventListener('pointerup', () => drag = false);
+  canvas.addEventListener('pointerup', () => drag = false); canvas.addEventListener('pointercancel', () => drag = false);
   canvas.addEventListener('pointermove', e => {
     if (!drag) return; const k = camera.fov / 600;
     lon -= (e.clientX - px) * k; lat = Math.max(-80, Math.min(80, lat + (e.clientY - py) * k)); px = e.clientX; py = e.clientY;
@@ -176,7 +184,9 @@
 
   // ---- layout / visibilidade ----
   function resize() {
-    const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h;
+    camera.fov = w / h < 1 ? 85 : 75;   // retrato: campo de visão maior
+    camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize); document.addEventListener('fullscreenchange', () => setTimeout(resize, 50)); resize();
   let visible = false;

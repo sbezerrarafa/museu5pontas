@@ -1,6 +1,10 @@
 /* UI: nav, reveal on scroll, contadores, tilt 3D nos cards */
 (function () {
   const nav = document.getElementById('nav');
+  // menu do celular
+  const burger = document.getElementById('burger');
+  burger.addEventListener('click', () => { const o = nav.classList.toggle('open'); burger.setAttribute('aria-expanded', o); document.body.style.overflow = o ? 'hidden' : ''; });
+  nav.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () => { nav.classList.remove('open'); document.body.style.overflow = ''; }));
   const onScroll = () => nav.classList.toggle('solid', scrollY > 40);
   addEventListener('scroll', onScroll); onScroll();
 
@@ -25,6 +29,7 @@
 
   document.querySelectorAll('.tilt').forEach(el => {
     el.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;   // sem inclinação em toque (atrapalha a rolagem)
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
       el.style.transition = 'transform .08s';

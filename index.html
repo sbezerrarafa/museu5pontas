@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6efe3">
 <title>Museu da Cidade do Recife · Forte das Cinco Pontas</title>
 <meta name="description" content="Museu da Cidade do Recife, instalado no Forte das Cinco Pontas desde 1982. Exposições, acervo de 250 mil imagens e visita virtual 360°.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +15,7 @@
 
 <header class="nav" id="nav">
   <a href="#topo" class="brand"><img src="img/logo.png" alt="Museu da Cidade do Recife"></a>
+  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
   <nav>
     <a href="#museu">Museu</a>
     <a href="#planta">Planta 3D</a>
@@ -78,6 +80,7 @@
         <canvas id="fort-canvas"></canvas>
         <div id="fort-labels"></div>
         <button id="fort-reset" class="reset">↺ visão geral</button>
+        <div class="zoomctl"><button id="fort-zoom-in" aria-label="Aproximar">＋</button><button id="fort-zoom-out" aria-label="Afastar">－</button><button id="fort-tilt" aria-label="Inclinar câmera">⤢</button></div>
       </div>
       <aside class="spot-panel">
         <h3 id="spot-name">Explore o forte</h3>
@@ -152,7 +155,7 @@
     </div>
 
     <div class="rooms" id="rooms"></div>
-    <p class="note">Por enquanto é uma simulação dentro da maquete 3D. Com o vídeo real (360° equirretangular, gravado caminhando pelo percurso) em <code>video/tour360.mp4</code>, o mesmo controle passa a andar o vídeo. Para vídeo local é preciso abrir o site por um servidor (por exemplo <code>python -m http.server</code>).</p>
+    <p class="note">Toque ou clique nos números para visitar cada espaço. Boa visita!</p>
   </div>
 </section>
 

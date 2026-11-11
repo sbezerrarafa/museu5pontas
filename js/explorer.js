@@ -7,7 +7,7 @@
   const panel = { name: document.getElementById('spot-name'), text: document.getElementById('spot-text'), go: document.getElementById('spot-tour'), list: document.getElementById('spot-list') };
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, LOWPOWER ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(0xf1e6d0);
@@ -17,7 +17,7 @@
 
   scene.add(new THREE.HemisphereLight(0xfff4de, 0xe6ddc8, 0.75));
   const sun = new THREE.DirectionalLight(0xfff0d8, 0.66);
-  sun.position.set(8, 14, 6); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  sun.position.set(8, 14, 6); sun.castShadow = true; sun.shadow.mapSize.set(LOWPOWER ? 1024 : 2048, LOWPOWER ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 40 });
   scene.add(sun);
 
@@ -37,18 +37,32 @@
     while (gTheta - theta < -Math.PI) gTheta += Math.PI * 2;
   }
 
-  let drag = false, px = 0, py = 0, auto = true, idle = 0;
-  canvas.addEventListener('pointerdown', e => { drag = true; px = e.clientX; py = e.clientY; auto = false; canvas.setPointerCapture(e.pointerId); });
-  canvas.addEventListener('pointerup', () => { drag = false; idle = 0; });
-  canvas.addEventListener('pointermove', e => {
-    if (!drag) return;
-    gTheta -= (e.clientX - px) * 0.007;
-    gPhi = Math.max(0.25, Math.min(1.45, gPhi - (e.clientY - py) * 0.007));
-    px = e.clientX; py = e.clientY;
+  // toque: 1 dedo gira na horizontal (a rolagem vertical da página continua livre), 2 dedos = pinça de zoom.
+  // mouse: arrastar gira nos dois eixos; roda dá zoom.
+  const touch = matchMedia('(pointer:coarse)').matches;
+  canvas.style.touchAction = touch ? 'pan-y' : 'none';
+  const ptrs = new Map(); let drag = false, auto = true, idle = 0, pinch0 = 0, dist0 = 0;
+  const zoom = f => { gDist = Math.max(10, Math.min(55, gDist * f)); };
+  canvas.addEventListener('pointerdown', e => {
+    ptrs.set(e.pointerId, e); drag = true; auto = false; canvas.setPointerCapture(e.pointerId);
+    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); dist0 = gDist; }
   });
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault(); gDist = Math.max(10, Math.min(55, gDist + e.deltaY * 0.01));
-  }, { passive: false });
+  const up = e => { ptrs.delete(e.pointerId); if (!ptrs.size) { drag = false; idle = 0; } };
+  canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('pointermove', e => {
+    const prev = ptrs.get(e.pointerId); if (!prev) return;
+    ptrs.set(e.pointerId, e);
+    if (ptrs.size === 2) {
+      const [a, b] = [...ptrs.values()], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      if (pinch0) gDist = Math.max(10, Math.min(55, dist0 * pinch0 / d)); return;
+    }
+    gTheta -= (e.clientX - prev.clientX) * 0.007;
+    if (!touch) gPhi = Math.max(0.25, Math.min(1.45, gPhi - (e.clientY - prev.clientY) * 0.007));
+  });
+  canvas.addEventListener('wheel', e => { e.preventDefault(); zoom(1 + e.deltaY * 0.01); }, { passive: false });
+  document.getElementById('fort-zoom-in').onclick = () => { zoom(0.8); auto = false; };
+  document.getElementById('fort-zoom-out').onclick = () => { zoom(1.25); auto = false; };
+  document.getElementById('fort-tilt').onclick = () => { gPhi = gPhi > 0.8 ? 0.45 : 1.1; auto = false; };
 
   // marcadores HTML
   let current = null;

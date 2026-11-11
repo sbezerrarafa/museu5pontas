@@ -5,7 +5,7 @@
   const hero = canvas.parentElement;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, LOWPOWER ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
@@ -15,7 +15,7 @@
   scene.add(new THREE.HemisphereLight(0xfff4de, 0xe6ddc8, 0.75));
   const sun = new THREE.DirectionalLight(0xfff0d8, 0.66);
   sun.position.set(8, 14, 6); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(LOWPOWER ? 1024 : 2048, LOWPOWER ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: 1, far: 40 });
   scene.add(sun);
 
@@ -33,12 +33,14 @@
   const dust = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xe8541e, size: 0.06, transparent: true, opacity: 0.55 }));
   scene.add(dust);
 
+  let k = 1;
   function resize() {
-    const w = hero.clientWidth, h = hero.clientHeight;
+    const w = canvas.clientWidth, h = canvas.clientHeight;      // no celular o canvas é só a faixa de cima do hero
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    const wide = w > 860;
-    camera.setViewOffset(w, h, wide ? -w * 0.23 : 0, wide ? 0 : -h * 0.22, w, h);
+    const wide = hero.clientWidth > 860;
+    k = wide ? 1 : Math.min(1.5, Math.max(0.8, 0.9 / camera.aspect));   // retrato estreito: afasta para caber na largura
+    if (wide) camera.setViewOffset(w, h, -w * 0.23, 0, w, h); else camera.clearViewOffset();
     camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize); resize();
@@ -87,7 +89,8 @@
     fort.rotation.y = rot + sc * 1.6;
     fort.userData.flag.rotation.y = Math.sin(t * 3) * 0.35;
     camera.position.x += (mx * 3 - camera.position.x) * 0.04;
-    camera.position.y += ((23 + my * 3 - sc * 3) - camera.position.y) * 0.04;
+    camera.position.y += ((23 * k + my * 3 - sc * 3) - camera.position.y) * 0.04;
+    camera.position.z = 38 * k;
     camera.lookAt(0, 0.5, 0);
     dust.rotation.y = t * 0.02;
     renderer.render(scene, camera);
